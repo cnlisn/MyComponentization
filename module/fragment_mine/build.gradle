@@ -1,0 +1,48 @@
+if (isModule.toBoolean()) { //集成模式 集成进入app
+    apply plugin: 'com.android.library'
+} else {                    //组件模式 单独运行
+    apply plugin: 'com.android.application'
+}
+android {
+    compileSdkVersion ScompileSdkVersion as int
+    defaultConfig {
+        if (!isModule.toBoolean()) {
+            applicationId "study.hank.com.mine"
+        }
+
+        minSdkVersion SminSdkVersion as int
+        targetSdkVersion StargetSdkVersion as int
+        versionCode SversionCode as int
+        versionName SversionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+
+        javaCompileOptions.annotationProcessorOptions.arguments = [moduleName: project.getName()]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                manifest.srcFile 'src/main/module/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    api project(':base:common')
+    api project(path: ':module:fragment_mine_api')
+    annotationProcessor project(':srouter:compiler')
+
+}

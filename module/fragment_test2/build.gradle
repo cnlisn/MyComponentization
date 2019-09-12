@@ -1,0 +1,46 @@
+if (isModule.toBoolean()) { //集成模式 集成进入app
+    apply plugin: 'com.android.library'
+} else {                    //组件模式 单独运行
+    apply plugin: 'com.android.application'
+}
+android {
+    compileSdkVersion ScompileSdkVersion as int
+
+    defaultConfig {
+        if (!isModule.toBoolean()) {
+            applicationId "com.lisn.tab2"
+        }
+        minSdkVersion SminSdkVersion as int
+        targetSdkVersion StargetSdkVersion as int
+        versionCode SversionCode as int
+        versionName SversionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions.annotationProcessorOptions.arguments = [moduleName: project.getName()]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                manifest.srcFile 'src/main/module/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation project(':base:common')
+    annotationProcessor project(':srouter:compiler')
+
+}

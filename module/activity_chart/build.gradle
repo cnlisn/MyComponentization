@@ -1,0 +1,47 @@
+if (isModule.toBoolean()) {
+    apply plugin: 'com.android.library'
+} else {
+    apply plugin: 'com.android.application'
+}
+
+android {
+    compileSdkVersion ScompileSdkVersion as int
+
+    defaultConfig {
+        if (!isModule.toBoolean()) {
+            applicationId "com.lisn.activity_chart"
+        }
+        minSdkVersion SminSdkVersion as int
+        targetSdkVersion StargetSdkVersion as int
+        versionCode SversionCode as int
+        versionName SversionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+        javaCompileOptions.annotationProcessorOptions.arguments = [moduleName: project.getName()]
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            if (isModule.toBoolean()) {
+                manifest.srcFile 'src/main/module/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+            }
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':base:common')
+    annotationProcessor project(':srouter:compiler')//使用指定的注解解析器
+}
